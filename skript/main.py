@@ -11,9 +11,8 @@ def writingFile(nameFile, lines):
 
 
 def find():
-    file = open('default_simple_python_block.py', mode='r', encoding='utf-8-sig')
-    lines = file.readlines()
-    file.close()
+    with open('default_simple_python_block.py', 'r') as file:
+        lines = file.readlines()
 
     upi_set = set()
     upo_set = set()
@@ -27,6 +26,10 @@ def find():
             upo_set.add(line)
 
     both_set.update(upi_set, upo_set)
+
+    upi_set = sorted(upi_set)
+    upo_set = sorted(upo_set)
+    both_set = sorted(both_set)
 
     writingFile("UserPortIn.txt", upi_set)
     writingFile("UserPortOut.txt", upo_set)

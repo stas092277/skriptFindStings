@@ -3,10 +3,6 @@ import re
 upiRe = '(.*) = UserPortIn'
 upoRe = '(.*) = UserPortOut'
 
-dependencies = {}
-all_inputs = set()
-using_params = set()
-
 
 class ParamsManager:
     def __init__(self, path="default_simple_python_block.py"):
@@ -26,22 +22,22 @@ class ParamsManager:
         for tmp in classes:
             ins = re.findall(r'(\w+) = UserPortIn', tmp)
             out = re.findall(r'(\w+) = UserPortOut', tmp)
-            dependencies[out[0]] = ins
+            self.dependencies[out[0]] = ins
             for tmp in ins:
-                all_inputs.add(tmp)
+                self.all_inputs.add(tmp)
 
     def get_all_input_params_for_out(self, name_out_param: str):
-        return [param for param in dependencies[name_out_param] if param not in using_params]
+        return [param for param in self.dependencies[name_out_param] if param not in self.using_params]
 
     def get_all_output_params_for_input(self, name_int_param: str):
         ans = []
-        for key in dependencies.keys():
-            if name_int_param in dependencies[key]:
+        for key in self.dependencies.keys():
+            if name_int_param in self.dependencies[key]:
                 ans.append(key)
         return ans
 
     def get_info_about_input_param(self, name_int_param: str):
-        if name_int_param in all_inputs:
+        if name_int_param in self.all_inputs:
 
             out_puts = self.get_all_output_params_for_input(name_int_param)
             for out_put in out_puts:
@@ -91,9 +87,9 @@ if __name__ == '__main__':
     manager = ParamsManager()
     manager.find_dependencies()
     print("Все входные параметры")
-    print(all_inputs)
+    print(manager.all_inputs)
 
     while True:
         param = input("Введите входной параметр чтобы узнать что можно посчитать: \n")
-        using_params.add(param)
+        manager.using_params.add(param)
         manager.get_info_about_input_param(param)
